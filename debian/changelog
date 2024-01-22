@@ -1,3 +1,9 @@
+debootstrap (1.0.134~bpo12+1) bookworm-backports; urgency=medium
+
+  * Rebuild for bookworm-backports.
+
+ -- Luca Boccassi <bluca@debian.org>  Mon, 22 Jan 2024 22:17:45 +0000
+
 debootstrap (1.0.134) unstable; urgency=medium
 
   [ Johannes Schauer Marin Rodrigues ]
