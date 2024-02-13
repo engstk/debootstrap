@@ -50,7 +50,6 @@ CACHE_DIR=""
 INRELEASE_PATH=""
 
 DEF_MIRROR="http://deb.debian.org/debian"
-DEF_HTTPS_MIRROR="https://deb.debian.org/debian"
 
 # set $CONTAINER
 detect_container
