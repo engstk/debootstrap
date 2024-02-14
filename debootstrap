@@ -514,6 +514,13 @@ else
 	fi
 
 	SCRIPT="$DEBOOTSTRAP_DIR/scripts/$1"
+	if ! [ -e "$SCRIPT" ] && [ $(which distro-info 2>/dev/null) ]; then
+		if debian-distro-info --series "$1" >/dev/null 2>&1; then
+			SCRIPT="$DEBOOTSTRAP_DIR/scripts/sid"
+		elif ubuntu-distro-info --series "$1" >/dev/null 2>&1; then
+			SCRIPT="$DEBOOTSTRAP_DIR/scripts/gutsy"
+		fi
+	fi
 	if [ -n "$VARIANT" ] && [ -e "${SCRIPT}.${VARIANT}" ]; then
 		SCRIPT="${SCRIPT}.${VARIANT}"
 		SUPPORTED_VARIANTS="$VARIANT"

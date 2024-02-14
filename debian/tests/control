@@ -8,6 +8,7 @@ Depends:
  systemd [linux-any],
  systemd-container [linux-any],
  ca-certificates,
+ distro-info,
 Restrictions: allow-stderr, needs-root
 
 Tests: unsorted-packages-files
