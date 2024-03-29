@@ -462,7 +462,7 @@ if ! doing_variant fakechroot && command -v apt-config >/dev/null; then
     fi
     if [ -z "${http_proxy+x}" ] && [ -x "$AUTOPROXY" ]; then
         http_proxy="$($AUTOPROXY)"
-        if [ -n "$http_proxy" ]; then
+        if [ -n "$http_proxy" ] && [ "$http_proxy" != "DIRECT" ]; then
             info AUTOPROXY "Using auto-detected proxy: $http_proxy"
             export http_proxy
         fi
