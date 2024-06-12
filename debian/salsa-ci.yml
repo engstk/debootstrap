@@ -33,7 +33,7 @@ test-unshare:
   script:
     - apt-get update
     - apt-get install --no-install-recommends -y libdistro-info-perl libdpkg-perl libipc-run-perl perl systemd systemd-container ca-certificates mmdebstrap uidmap wget distro-info
-    - mmdebstrap --variant=custom --mode=unshare --setup-hook=./debian/tests/debian-testing --skip=update,setup,cleanup - "$AUTOPKGTEST_TMP/chroot.d"
+    - mmdebstrap --variant=custom --mode=unshare --setup-hook="./debian/tests/debian-testing minbase" --skip=update,setup,cleanup - "$AUTOPKGTEST_TMP/chroot.d"
 
 test-buildd:
   stage: test extras
