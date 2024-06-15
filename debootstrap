@@ -619,7 +619,7 @@ if am_doing_phase first_stage second_stage; then
 	fi
 	# Ensure that we can create working devices and executables on the target.
 	if ! check_sane_mount "$TARGET"; then
-		error 1 NOEXEC "Cannot install into target '$TARGET' mounted with noexec or nodev"
+		error 1 NOEXEC "Cannot install into target '$TARGET' mounted with noexec"
 	fi
 fi
 
