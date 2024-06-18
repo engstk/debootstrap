@@ -1,11 +1,12 @@
 ---
 include:
-  - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/salsa-ci.yml
-  - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/pipeline-jobs.yml
+  - https://salsa.debian.org/installer-team/branch2repo/-/raw/main/trigger_b2r.yml
 
 variables:
-  SALSA_CI_DISABLE_BLHC: 1
   SALSA_CI_DISABLE_BUILD_PACKAGE_ANY: 1
+  # undo some of branch2repo's defaults, which are tuned for udebs
+  SALSA_CI_DISABLE_LINTIAN: 0
+  SALSA_CI_DISABLE_PIUPARTS: 0
 
 # This tests running debootstrap inside an unshared user namespace.
 # Inside that namespace, mknod is not available.
