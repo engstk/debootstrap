@@ -1,3 +1,13 @@
+debootstrap (1.0.137) unstable; urgency=medium
+
+  [ kasperk81 ]
+  * reinstate Ubuntu codename symlinks
+
+  [ Luca Boccassi ]
+  * Ubuntu: add symlink for oracular
+
+ -- Luca Boccassi <bluca@debian.org>  Thu, 25 Jul 2024 23:15:47 +0100
+
 debootstrap (1.0.136) unstable; urgency=medium
 
   [ Philip Hands ]
