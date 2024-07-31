@@ -1,20 +1,13 @@
 ---
 include:
-  - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/salsa-ci.yml
-  - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/pipeline-jobs.yml
+  - https://salsa.debian.org/installer-team/branch2repo/-/raw/main/trigger_b2r.yml
 
 variables:
-  SALSA_CI_DISABLE_BLHC: 1
-  SALSA_CI_DISABLE_BUILD_PACKAGE_ANY: 1
   SALSA_CI_DISABLE_VERSION_BUMP: 'true'
-
-# stages can only be overridden not extended, so we have to list all of them
-stages:
-  - provisioning
-  - build
-  - test
-  - test extras
-  - publish # Stage referenced by Salsa-CI template aptly stanza, so must exist even though not used
+  SALSA_CI_DISABLE_BUILD_PACKAGE_ANY: 1
+  # undo some of branch2repo's defaults, which are tuned for udebs
+  SALSA_CI_DISABLE_LINTIAN: 0
+  SALSA_CI_DISABLE_PIUPARTS: 0
 
 # This tests running debootstrap inside an unshared user namespace.
 # Inside that namespace, mknod is not available.
@@ -22,7 +15,7 @@ stages:
 # #1031222) so this also tests whether the fallback to bind-mounting
 # proc works as systemd-tmpfiles will otherwise not create several files.
 test-unshare:
-  stage: test extras
+  stage: test
   image: $SALSA_CI_IMAGES_BASE
   needs:
     - job: build
@@ -33,11 +26,11 @@ test-unshare:
     AUTOPKGTEST_TMP: /tmp
   script:
     - apt-get update
-    - apt-get install --no-install-recommends -y libdistro-info-perl libdpkg-perl libipc-run-perl perl systemd systemd-container ca-certificates mmdebstrap uidmap wget
-    - mmdebstrap --variant=custom --mode=unshare --setup-hook=./debian/tests/debian-testing --skip=update,setup,cleanup - "$AUTOPKGTEST_TMP/chroot.d"
+    - apt-get install --no-install-recommends -y libdistro-info-perl libdpkg-perl libipc-run-perl perl systemd systemd-container ca-certificates mmdebstrap uidmap wget distro-info
+    - mmdebstrap --variant=custom --mode=unshare --setup-hook="./debian/tests/debian-testing minbase" --skip=update,setup,cleanup - "$AUTOPKGTEST_TMP/chroot.d"
 
 test-buildd:
-  stage: test extras
+  stage: test
   image: $SALSA_CI_IMAGES_BASE
   needs:
     - job: build
@@ -46,7 +39,7 @@ test-buildd:
     - |
       set -x
       apt-get update
-      apt-get install --no-install-recommends -y wget
+      apt-get install --no-install-recommends -y wget distro-info
       for SUITE in bullseye bookworm trixie; do
           env DEBOOTSTRAP_DIR="$CI_PROJECT_DIR" ./debootstrap --variant=buildd "$SUITE" ./chroot
           # check if chroots before trixie are unmerged and chroots of trixie
