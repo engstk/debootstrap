@@ -1,5 +1,17 @@
 # shellcheck shell=sh
-if ubuntu-distro-info --supported | grep "$SUITE" >/dev/null 2>&1; then
+if which ubuntu-distro-info >/dev/null 2>&1; then
+	if ubuntu-distro-info --supported | grep -q "$SUITE" >/dev/null 2>&1; then
+		supported=true
+	else
+		supported=false
+	fi
+elif which curl >/dev/null 2>&1 && which jq >/dev/null 2>&1; then
+	supported="$(curl -s https://endoflife.date/api/ubuntu.json | jq --arg suite $SUITE '[.[] | select((.extendedSupport // .support) > (now | strftime("%Y-%m-%d")) and (.codename | test($suite; "i")))] | isempty(.[]) | not')"
+else
+	supported=true
+fi
+
+if [ "$supported" = true ]; then
 	case "$ARCH" in
 		amd64|i386)
 			default_mirror http://archive.ubuntu.com/ubuntu
