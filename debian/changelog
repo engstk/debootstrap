@@ -2,6 +2,7 @@ debootstrap (1.0.138) UNRELEASED; urgency=medium
 
   [ Benjamin Drung ]
   * Fix EXTRACTOR_OVERRIDE: parameter not set (LP: #1971951)
+  * Fix several shellcheck complaints
 
  -- Gianfranco Costamagna <locutusofborg@debian.org>  Mon, 05 Aug 2024 16:41:07 +0200
 

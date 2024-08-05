@@ -160,7 +160,7 @@ if [ $# != 0 ] ; then
 		exit 0
 		;;
 	    --debian-installer)
-		if ! (echo -n "" >&3) 2>/dev/null; then
+		if ! (printf "" >&3) 2>/dev/null; then
 			error 1 ARG_DIBYHAND "If running debootstrap by hand, don't use --debian-installer"
 		fi
 		USE_DEBIANINSTALLER_INTERACTION=yes
@@ -365,7 +365,7 @@ if [ $# != 0 ] ; then
 		else
 			error 1 NEEDARG "option requires an argument %s" "$1"
 		fi
-		if [ ! -z "${CACHE_DIR##/*}" ]; then
+		if [ -n "${CACHE_DIR##/*}" ]; then
 			error 1 NOTABSOLUTEPATH "cache directory should be specified with an absolute path"
 		fi
 		if [ ! -d "$CACHE_DIR" ] ; then
