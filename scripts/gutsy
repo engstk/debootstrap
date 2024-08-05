@@ -174,7 +174,7 @@ Status: install ok installed" >> "$TARGET/var/lib/dpkg/status"
 	}
 
 	p () {
-		baseprog="$(($baseprog + ${1:-1}))"
+		baseprog="$((baseprog + 1))"
 	}
 
 	if ! doing_variant fakechroot; then
