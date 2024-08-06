@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 if ubuntu-distro-info --supported | grep "$SUITE" >/dev/null 2>&1; then
 	case "$ARCH" in
 		amd64|i386)
