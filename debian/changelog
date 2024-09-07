@@ -4,6 +4,11 @@ debootstrap (1.0.138) UNRELEASED; urgency=medium
   * Fix EXTRACTOR_OVERRIDE: parameter not set (LP: #1971951)
   * Fix several shellcheck complaints
 
+  [ Samuel Thibault ]
+  * work_out_debs: On hurd-any, when cron gets installed, add opensysusers to
+    fulfill's cron-daemon-common dependency on systemd-opensysusers
+    (Closes: Bug#1079374)
+
  -- Gianfranco Costamagna <locutusofborg@debian.org>  Mon, 05 Aug 2024 16:41:07 +0200
 
 debootstrap (1.0.137) unstable; urgency=medium

@@ -75,6 +75,19 @@ work_out_debs () {
 			EXCLUDE_DEPENDENCY="$EXCLUDE_DEPENDENCY usrmerge"
 			;;
 	esac
+
+	case $ARCH in
+		hurd-*)
+			# cron-daemon-common depends on systemd-opensysusers
+			# that opensysusers Provides, but debootstrap won't
+			# see that
+			case \ $(echo $base)\  in
+				*" cron "*)
+					required="$required opensysusers"
+					;;
+			esac
+			;;
+	esac
 }
 
 first_stage_install () {
