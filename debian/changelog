@@ -1,4 +1,4 @@
-debootstrap (1.0.138) UNRELEASED; urgency=medium
+debootstrap (1.0.138) unstable; urgency=medium
 
   [ Benjamin Drung ]
   * Fix EXTRACTOR_OVERRIDE: parameter not set (LP: #1971951)
@@ -16,7 +16,17 @@ debootstrap (1.0.138) UNRELEASED; urgency=medium
   [ Charles Short ]
   * Add support for eLxr.
 
- -- Gianfranco Costamagna <locutusofborg@debian.org>  Mon, 05 Aug 2024 16:41:07 +0200
+  [ Denis 'GNUtoo' Carikli ]
+  * scripts/amber: fix fakechroot.
+  * scripts/robur: fix fakechroot.
+
+  [ Johannes Schauer Marin Rodrigues ]
+  * create /dev/fd symlink with --no-target-directory
+
+  [ Luca Boccassi ]
+  * Ubuntu: add symlink for plucky
+
+ -- Luca Boccassi <bluca@debian.org>  Wed, 27 Nov 2024 22:08:03 +0000
 
 debootstrap (1.0.137) unstable; urgency=medium
 
