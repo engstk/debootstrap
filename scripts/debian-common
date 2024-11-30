@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 if doing_variant fakechroot; then
 	test "$FAKECHROOT" = "true" || error 1 FAKECHROOTREQ "This variant requires fakechroot environment to be started"
 fi
@@ -72,6 +73,19 @@ work_out_debs () {
 		*)
 			required="$required usr-is-merged"
 			EXCLUDE_DEPENDENCY="$EXCLUDE_DEPENDENCY usrmerge"
+			;;
+	esac
+
+	case $ARCH in
+		hurd-*)
+			# cron-daemon-common depends on systemd-opensysusers
+			# that opensysusers Provides, but debootstrap won't
+			# see that
+			case \ $(echo $base)\  in
+				*" cron "*)
+					required="$required opensysusers"
+					;;
+			esac
 			;;
 	esac
 }

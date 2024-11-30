@@ -1,3 +1,33 @@
+debootstrap (1.0.138) unstable; urgency=medium
+
+  [ Benjamin Drung ]
+  * Fix EXTRACTOR_OVERRIDE: parameter not set (LP: #1971951)
+  * Fix several shellcheck complaints
+
+  [ Samuel Thibault ]
+  * work_out_debs: On hurd-any, when cron gets installed, add opensysusers to
+    fulfill's cron-daemon-common dependency on systemd-opensysusers
+    (Closes: Bug#1079374)
+
+  [ Miao Wang ]
+  * Self-identify the name and the version in the User-Agent header sent out
+    by wget.
+
+  [ Charles Short ]
+  * Add support for eLxr.
+
+  [ Denis 'GNUtoo' Carikli ]
+  * scripts/amber: fix fakechroot.
+  * scripts/robur: fix fakechroot.
+
+  [ Johannes Schauer Marin Rodrigues ]
+  * create /dev/fd symlink with --no-target-directory
+
+  [ Luca Boccassi ]
+  * Ubuntu: add symlink for plucky
+
+ -- Luca Boccassi <bluca@debian.org>  Wed, 27 Nov 2024 22:08:03 +0000
+
 debootstrap (1.0.137~bpo12+1) bookworm-backports; urgency=medium
 
   * Rebuild for bookworm-backports.

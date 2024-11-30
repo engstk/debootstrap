@@ -3,8 +3,8 @@ mirror_style release
 download_style apt
 finddebs_style from-indices
 variants - buildd fakechroot minbase
-keyring /usr/share/keyrings/kali-archive-keyring.gpg
-default_mirror http://http.kali.org/kali
+keyring /usr/share/keyrings/elxr-archive-keyring.gpg
+default_mirror https://mirror.elxr.dev/elxr
 
 # include common settings
 if [ -e "$DEBOOTSTRAP_DIR/scripts/debian-common" ]; then
