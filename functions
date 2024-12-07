@@ -684,10 +684,16 @@ download_release_sig () {
 		fi
 
 		info RELEASESIG "Checking Release signature"
-		# Don't worry about the exit status from gpgv; parsing the output will
-		# take care of that.
-		(gpgv --status-fd 1 --keyring "$KEYRING" --ignore-time-conflict \
-		 "$relsigdest" "$reldest" || true) | read_gpg_status
+		if in_path sopv; then
+			local rc=0
+			sopv verify "$relsigdest" "$KEYRING" <"$reldest" || rc=$?
+			check_sop_status "$rc"
+		else
+			# Don't worry about the exit status from gpgv; parsing the output will
+			# take care of that.
+			(gpgv --status-fd 1 --keyring "$KEYRING" --ignore-time-conflict \
+			 "$relsigdest" "$reldest" || true) | read_gpg_status
+		fi
 		progress 100 100 DOWNRELSIG "Downloading Release file signature"
 	fi
 }
@@ -1885,6 +1891,24 @@ EOF
 	rm -f "$1/test-exec"
 
 	return 0
+}
+
+check_sop_status () {
+	local err="$1"
+	case "$err" in
+	    0)
+		info VALIDRELSIG "Valid Release signature"
+		;;
+	    3)
+		error 1 UNKNOWNRELSIG "Release signed by unknown key\n   The specified keyring $KEYRING may be incorrect or out of date.\n   You can find the latest Debian release key at https://ftp-master.debian.org/keys.html"
+		;;
+	    41)
+		error 1 BADRELSIG "Invalid Release signature"
+		;;
+	    *)
+		error 1 SIGCHECK "Error executing sopv to check Release signature (SOP error $err)"
+		;;
+	esac
 }
 
 read_gpg_status () {
