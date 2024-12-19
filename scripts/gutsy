@@ -1,12 +1,14 @@
 # shellcheck shell=sh
-if which ubuntu-distro-info >/dev/null 2>&1; then
+if command -v ubuntu-distro-info >/dev/null 2>&1; then
 	if ubuntu-distro-info --supported | grep -q "$SUITE" >/dev/null 2>&1; then
 		supported=true
 	else
 		supported=false
 	fi
-elif which curl >/dev/null 2>&1 && which jq >/dev/null 2>&1; then
+elif command -v curl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
 	supported="$(curl -s https://endoflife.date/api/ubuntu.json | jq --arg suite $SUITE '[.[] | select((.extendedSupport // .support) > (now | strftime("%Y-%m-%d")) and (.codename | test($suite; "i")))] | isempty(.[]) | not')"
+elif command -v wget >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+	supported="$(wget -qO- https://endoflife.date/api/ubuntu.json | jq --arg suite $SUITE '[.[] | select((.extendedSupport // .support) > (now | strftime("%Y-%m-%d")) and (.codename | test($suite; "i")))] | isempty(.[]) | not')"
 else
 	supported=true
 fi
@@ -45,7 +47,7 @@ case $ARCH in
 esac
 
 # impish+ will use zstd compression, check if supported
-if [ $(ubuntu-distro-info -r --series "$SUITE" | cut -d. -f1) -gt 20 ]; then
+if command -v ubuntu-distro-info >/dev/null 2>&1; && [ $(ubuntu-distro-info -r --series "$SUITE" | cut -d. -f1) -gt 20 ]; then
 	dpkg_zstd="$(dpkg-deb --help 2>/dev/null | grep ' zstd,' || :)"
 	if [ -z "${EXTRACTOR_OVERRIDE-}" ] && [ -z "$dpkg_zstd" ]; then
 		info CHOSENEXTRACTOR "%s uses zstd compression, setting --extractor=ar option" "$SUITE"
