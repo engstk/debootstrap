@@ -383,7 +383,7 @@ if [ $# != 0 ] ; then
 		shift
 		;;
 	    --keyring|--keyring=?*)
-		if ! gpgv --version >/dev/null 2>&1; then
+		if ! in_path gpgv; then
 			error 1 NEEDGPGV "gpgv not installed, but required for Release verification"
 		fi
 		if [ "$1" = "--keyring" ] && [ -n "$2" ]; then
