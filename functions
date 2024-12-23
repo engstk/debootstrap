@@ -688,6 +688,10 @@ download_release_sig () {
 			local rc=0
 			sopv verify "$relsigdest" "$KEYRING" <"$reldest" || rc=$?
 			check_sop_status "$rc"
+		elif in_path sqv; then
+			local rc=0
+			sqv --keyring "$KEYRING" "$relsigdest" "$reldest" || rc=$?
+			check_sqv_status "$rc"
 		else
 			# Don't worry about the exit status from gpgv; parsing the output will
 			# take care of that.
@@ -1907,6 +1911,21 @@ check_sop_status () {
 		;;
 	    *)
 		error 1 SIGCHECK "Error executing sopv to check Release signature (SOP error $err)"
+		;;
+	esac
+}
+
+check_sqv_status () {
+	local err="$1"
+	case "$err" in
+	    0)
+		info VALIDRELSIG "Valid Release signature"
+		;;
+	    1)
+		error 1 BADRELSIG "Invalid Release signature"
+		;;
+	    *)
+		error 1 SIGCHECK "Error executing sqv to check Release signature (sqv error $err)"
 		;;
 	esac
 }

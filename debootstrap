@@ -383,8 +383,8 @@ if [ $# != 0 ] ; then
 		shift
 		;;
 	    --keyring|--keyring=?*)
-		if ! in_path sopv && ! in_path gpgv; then
-			error 1 NEEDPGPV "neither of sopv or gpgv are installed, but required for Release verification"
+		if ! in_path sopv && ! in_path sqv && ! in_path gpgv; then
+			error 1 NEEDPGPV "none of sopv, sqv or gpgv are installed, but required for Release verification"
 		fi
 		if [ "$1" = "--keyring" ] && [ -n "$2" ]; then
 			KEYRING="$2"
