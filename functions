@@ -1306,7 +1306,7 @@ setup_devices () {
 	case "$HOST_OS" in
 	    kfreebsd*)
 		;;
-	    freebsd)
+	    freebsd|darwin)
 		;;
 	    hurd*)
 		touch "$TARGET/servers/exec"
@@ -1840,7 +1840,7 @@ check_sane_mount () {
 	mkdir -p "$1"
 
 	case "$HOST_OS" in
-	    *freebsd*|hurd*)
+	    *freebsd*|hurd*|darwin)
 		;;
 	    *)
 		if ! doing_variant fakechroot; then
