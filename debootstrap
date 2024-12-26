@@ -570,6 +570,9 @@ if [ -z "$HOST_OS" ]; then
 		FreeBSD*)
 			HOST_OS=freebsd
 		;;
+		Darwin)
+			HOST_OS=darwin
+		;;
 	esac
 fi
 
@@ -875,6 +878,13 @@ fi
 if am_doing_phase kill_target; then
 	if [ "$KEEP_DEBOOTSTRAP_DIR" != true ]; then
                 info KILLTARGET "Deleting target directory"
-		rm -rf --one-file-system "$TARGET"
+		case "$HOST_OS" in
+			freebsd|darwin)
+				rm -rfx "$TARGET"
+				;;
+			*)
+				rm -rf --one-file-system "$TARGET"
+				;;
+		esac
 	fi
 fi
