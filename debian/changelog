@@ -1,3 +1,28 @@
+debootstrap (1.0.139) unstable; urgency=high
+
+  [ Dan Bungert ]
+  * Ubuntu: fix intended reference to SUITE
+
+  [ Kasper Kantz ]
+  * Make distro-info script portable
+
+  [ keve-guest ]
+  * Add support for running on MacOS
+
+  [ Guillem Jover ]
+  * Add debian/debhelper-build-stamp to debian/.gitignore
+  * Add new --no-check-sig and --force-check-sig
+  * Recommend gpgv instead of gnupg
+  * Use «in_path» instead of executing «gpgv --version»
+  * Add sopv support
+  * Add sqv support (Closes: #1091588)
+
+  [ Luca Boccassi ]
+  * Prefer gpgv if all signature verification tools are installed
+  * Do not pull in usr-is-merged in trixie/sid (Closes: #1091649)
+
+ -- Luca Boccassi <bluca@debian.org>  Sun, 29 Dec 2024 12:24:52 +0000
+
 debootstrap (1.0.138) unstable; urgency=medium
 
   [ Benjamin Drung ]
