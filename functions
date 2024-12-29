@@ -1500,14 +1500,6 @@ merge_usr_entry() {
 }
 
 merge_usr() {
-	if doing_variant buildd && [ -z "$MERGED_USR" ]; then
-	    case "$CODENAME" in
-		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
-		    MERGED_USR="no"
-		    ;;
-	    esac
-	fi
-
 	if [ "$MERGED_USR" = "no" ]; then
 	    # With the usrmerge becoming pseudo-essential we need to use this flag
 	    # to ensure that even if it gets installed the buildd is not converted

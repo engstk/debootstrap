@@ -111,6 +111,14 @@ first_stage_install () {
 		MERGED_USR="no"
 	fi
 
+	if doing_variant buildd && [ -z "$MERGED_USR" ]; then
+	    case "$CODENAME" in
+		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
+		    MERGED_USR="no"
+		    ;;
+	    esac
+	fi
+
 	extract $required
 	merge_usr
 
