@@ -97,9 +97,8 @@ work_out_debs () {
 
 first_stage_install () {
 	case "$CODENAME" in
-		# "merged-usr" blacklist for past releases
+		# tar -k blacklist for past releases
 		etch*|lenny|squeeze|wheezy|jessie*)
-			[ -z "$MERGED_USR" ] && MERGED_USR="no"
 			;;
 		*)
 			# see https://bugs.debian.org/838388
@@ -107,17 +106,15 @@ first_stage_install () {
 			;;
 	esac
 
-	if [ "$CODENAME" = "stretch" ] && [ -z "$MERGED_USR" ]; then
-		MERGED_USR="no"
-	fi
-
-	if doing_variant buildd && [ -z "$MERGED_USR" ]; then
-	    case "$CODENAME" in
-		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
-		    MERGED_USR="no"
-		    ;;
-	    esac
-	fi
+	case "$CODENAME" in
+		# "merged-usr" blacklist for past releases
+		etch*|lenny|squeeze|wheezy|jessie*|stretch)
+			[ -z "$MERGED_USR" ] && MERGED_USR="no"
+		;;
+		buster|bullseye|bookworm)
+			[ -z "$MERGED_USR" ] && doing_variant buildd && MERGED_USR="no"
+		;;
+	esac
 
 	extract $required
 	merge_usr
