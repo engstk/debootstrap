@@ -61,17 +61,22 @@ work_out_debs () {
 		;;
 	esac
 
-	# On suites >= bookworm, either we set up a merged-/usr system
+	# On suites == bookworm, either we set up a merged-/usr system
 	# via merge_usr, or we deliberately avoid that migration by creating
 	# the flag file. This means there's no need for the live migration
 	# 'usrmerge' package and its extra dependencies:
 	# we can install the empty 'usr-is-merged' metapackage to indicate
 	# that the transition has been done.
+	# On suites > bookworm there are no longer usr-is-merged or usrmerge
+	# packages, so ensure the dependency is pruned if present.
 	case "$CODENAME" in
 		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye)
 			;;
-		*)
+		bookworm)
 			required="$required usr-is-merged"
+			EXCLUDE_DEPENDENCY="$EXCLUDE_DEPENDENCY usrmerge"
+			;;
+		*)
 			EXCLUDE_DEPENDENCY="$EXCLUDE_DEPENDENCY usrmerge"
 			;;
 	esac
