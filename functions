@@ -684,7 +684,13 @@ download_release_sig () {
 		fi
 
 		info RELEASESIG "Checking Release signature"
-		if in_path sopv; then
+		# If everything is installed, prefer gpgv for now
+		if in_path gpgv; then
+			# Don't worry about the exit status from gpgv; parsing the output will
+			# take care of that.
+			(gpgv --status-fd 1 --keyring "$KEYRING" --ignore-time-conflict \
+			 "$relsigdest" "$reldest" || true) | read_gpg_status
+		elif in_path sopv; then
 			local rc=0
 			sopv verify "$relsigdest" "$KEYRING" <"$reldest" || rc=$?
 			check_sop_status "$rc"
@@ -693,10 +699,8 @@ download_release_sig () {
 			sqv --keyring "$KEYRING" "$relsigdest" "$reldest" || rc=$?
 			check_sqv_status "$rc"
 		else
-			# Don't worry about the exit status from gpgv; parsing the output will
-			# take care of that.
-			(gpgv --status-fd 1 --keyring "$KEYRING" --ignore-time-conflict \
-			 "$relsigdest" "$reldest" || true) | read_gpg_status
+			# This is already checked at argument parsing time, so shouldn't happen here
+			error 1 NEEDPGPV "none of sopv, sqv or gpgv are installed, but required for Release verification"
 		fi
 		progress 100 100 DOWNRELSIG "Downloading Release file signature"
 	fi
