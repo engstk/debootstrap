@@ -412,10 +412,10 @@ if [ $# != 0 ] ; then
 			CERTIFICATE="--certificate=$2"
 			shift 2
 		elif [ "$1" != "${1#--certificate=}" ]; then
-			CERTIFICATE="--certificate=${1#--certificate=}" 
+			CERTIFICATE="--certificate=${1#--certificate=}"
 			shift 1
 		else
-		       error 1 NEEDARG "option requires an argument %s" "$1" 
+		       error 1 NEEDARG "option requires an argument %s" "$1"
 		fi
 		;;
 	    --private-key|--private-key=?*)
@@ -423,10 +423,10 @@ if [ $# != 0 ] ; then
 			PRIVATEKEY="--private-key=$2"
 			shift 2
 		elif [ "$1" != "${1#--private-key=}" ]; then
-			PRIVATEKEY="--private-key=${1#--private-key=}" 
+			PRIVATEKEY="--private-key=${1#--private-key=}"
 			shift 1
 		else
-		       error 1 NEEDARG "option requires an argument %s" "$1" 
+		       error 1 NEEDARG "option requires an argument %s" "$1"
 		fi
 		;;
 	    --no-check-certificate)
