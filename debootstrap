@@ -113,10 +113,12 @@ usage()
       --no-merged-usr        do not make /{bin,sbin,lib}/ symlinks to /usr/
                              (default for older Debian suites)
       --keyring=K            check Release files against keyring K
-      --no-check-gpg         avoid checking Release file signatures
-      --force-check-gpg      force checking Release file signatures
+      --no-check-sig         avoid checking Release file signatures
+      --no-check-gpg         deprecated alias for --no-check-sig
+      --force-check-sig      force checking Release file signatures
                              (also disables automatic fallback to HTTPS in case
                              of a missing keyring), aborting otherwise
+      --force-check-gpg      deprecated alias for --force-check-sig
       --no-resolve-deps      don't try to resolve dependencies automatically
       --log-extra-deps       record extra dependency info in debootstrap.log
       --cache-dir=DIR        Use specified directory as package cache directory
@@ -381,8 +383,8 @@ if [ $# != 0 ] ; then
 		shift
 		;;
 	    --keyring|--keyring=?*)
-		if ! gpgv --version >/dev/null 2>&1; then
-			error 1 NEEDGPGV "gpgv not installed, but required for Release verification"
+		if ! in_path sopv && ! in_path sqv && ! in_path gpgv; then
+			error 1 NEEDPGPV "none of sopv, sqv or gpgv are installed, but required for Release verification"
 		fi
 		if [ "$1" = "--keyring" ] && [ -n "$2" ]; then
 			KEYRING="$2"
@@ -397,11 +399,11 @@ if [ $# != 0 ] ; then
 			error 1 KEYRING "specified keyring file ($KEYRING) not found"
 		fi
 		;;
-	    --no-check-gpg)
+	    --no-check-sig|--no-check-gpg)
 			shift 1
 			DISABLE_KEYRING=1
 		;;
-	    --force-check-gpg)
+	    --force-check-sig|--force-check-gpg)
 			shift 1
 			FORCE_KEYRING=1
 		;;
@@ -410,10 +412,10 @@ if [ $# != 0 ] ; then
 			CERTIFICATE="--certificate=$2"
 			shift 2
 		elif [ "$1" != "${1#--certificate=}" ]; then
-			CERTIFICATE="--certificate=${1#--certificate=}" 
+			CERTIFICATE="--certificate=${1#--certificate=}"
 			shift 1
 		else
-		       error 1 NEEDARG "option requires an argument %s" "$1" 
+		       error 1 NEEDARG "option requires an argument %s" "$1"
 		fi
 		;;
 	    --private-key|--private-key=?*)
@@ -421,10 +423,10 @@ if [ $# != 0 ] ; then
 			PRIVATEKEY="--private-key=$2"
 			shift 2
 		elif [ "$1" != "${1#--private-key=}" ]; then
-			PRIVATEKEY="--private-key=${1#--private-key=}" 
+			PRIVATEKEY="--private-key=${1#--private-key=}"
 			shift 1
 		else
-		       error 1 NEEDARG "option requires an argument %s" "$1" 
+		       error 1 NEEDARG "option requires an argument %s" "$1"
 		fi
 		;;
 	    --no-check-certificate)
@@ -471,7 +473,7 @@ fi
 
 ###########################################################################
 if [ -n "$DISABLE_KEYRING" ] && [ -n "$FORCE_KEYRING" ]; then
-	error 1 BADARG "Both --no-check-gpg and --force-check-gpg specified, please pick one (at most)"
+	error 1 BADARG "Both --no-check-sig (or --no-check-gpg) and --force-check-sig (or --force-check-gpg) specified, please pick one (at most)"
 fi
 
 ###########################################################################
@@ -569,6 +571,9 @@ if [ -z "$HOST_OS" ]; then
 		;;
 		FreeBSD*)
 			HOST_OS=freebsd
+		;;
+		Darwin)
+			HOST_OS=darwin
 		;;
 	esac
 fi
@@ -875,6 +880,13 @@ fi
 if am_doing_phase kill_target; then
 	if [ "$KEEP_DEBOOTSTRAP_DIR" != true ]; then
                 info KILLTARGET "Deleting target directory"
-		rm -rf --one-file-system "$TARGET"
+		case "$HOST_OS" in
+			freebsd|darwin)
+				rm -rfx "$TARGET"
+				;;
+			*)
+				rm -rf --one-file-system "$TARGET"
+				;;
+		esac
 	fi
 fi

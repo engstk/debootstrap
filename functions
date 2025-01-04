@@ -684,10 +684,24 @@ download_release_sig () {
 		fi
 
 		info RELEASESIG "Checking Release signature"
-		# Don't worry about the exit status from gpgv; parsing the output will
-		# take care of that.
-		(gpgv --status-fd 1 --keyring "$KEYRING" --ignore-time-conflict \
-		 "$relsigdest" "$reldest" || true) | read_gpg_status
+		# If everything is installed, prefer gpgv for now
+		if in_path gpgv; then
+			# Don't worry about the exit status from gpgv; parsing the output will
+			# take care of that.
+			(gpgv --status-fd 1 --keyring "$KEYRING" --ignore-time-conflict \
+			 "$relsigdest" "$reldest" || true) | read_gpg_status
+		elif in_path sopv; then
+			local rc=0
+			sopv verify "$relsigdest" "$KEYRING" <"$reldest" || rc=$?
+			check_sop_status "$rc"
+		elif in_path sqv; then
+			local rc=0
+			sqv --keyring "$KEYRING" "$relsigdest" "$reldest" || rc=$?
+			check_sqv_status "$rc"
+		else
+			# This is already checked at argument parsing time, so shouldn't happen here
+			error 1 NEEDPGPV "none of sopv, sqv or gpgv are installed, but required for Release verification"
+		fi
 		progress 100 100 DOWNRELSIG "Downloading Release file signature"
 	fi
 }
@@ -1306,7 +1320,7 @@ setup_devices () {
 	case "$HOST_OS" in
 	    kfreebsd*)
 		;;
-	    freebsd)
+	    freebsd|darwin)
 		;;
 	    hurd*)
 		touch "$TARGET/servers/exec"
@@ -1486,14 +1500,6 @@ merge_usr_entry() {
 }
 
 merge_usr() {
-	if doing_variant buildd && [ -z "$MERGED_USR" ]; then
-	    case "$CODENAME" in
-		etch*|lenny|squeeze|wheezy|jessie*|stretch|buster|bullseye|bookworm)
-		    MERGED_USR="no"
-		    ;;
-	    esac
-	fi
-
 	if [ "$MERGED_USR" = "no" ]; then
 	    # With the usrmerge becoming pseudo-essential we need to use this flag
 	    # to ensure that even if it gets installed the buildd is not converted
@@ -1840,7 +1846,7 @@ check_sane_mount () {
 	mkdir -p "$1"
 
 	case "$HOST_OS" in
-	    *freebsd*|hurd*)
+	    *freebsd*|hurd*|darwin)
 		;;
 	    *)
 		if ! doing_variant fakechroot; then
@@ -1885,6 +1891,39 @@ EOF
 	rm -f "$1/test-exec"
 
 	return 0
+}
+
+check_sop_status () {
+	local err="$1"
+	case "$err" in
+	    0)
+		info VALIDRELSIG "Valid Release signature"
+		;;
+	    3)
+		error 1 UNKNOWNRELSIG "Release signed by unknown key\n   The specified keyring $KEYRING may be incorrect or out of date.\n   You can find the latest Debian release key at https://ftp-master.debian.org/keys.html"
+		;;
+	    41)
+		error 1 BADRELSIG "Invalid Release signature"
+		;;
+	    *)
+		error 1 SIGCHECK "Error executing sopv to check Release signature (SOP error $err)"
+		;;
+	esac
+}
+
+check_sqv_status () {
+	local err="$1"
+	case "$err" in
+	    0)
+		info VALIDRELSIG "Valid Release signature"
+		;;
+	    1)
+		error 1 BADRELSIG "Invalid Release signature"
+		;;
+	    *)
+		error 1 SIGCHECK "Error executing sqv to check Release signature (sqv error $err)"
+		;;
+	esac
 }
 
 read_gpg_status () {
